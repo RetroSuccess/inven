@@ -1,10 +1,10 @@
 import json
 
 students = [
-    {"name,John, grade, 83"},
-    {"name, Mary, grade, 75"},
-    {"name, Tom, grade 50"},
-    {"name, Shawn, grade, 30"}
+    {"name": "John", "grade": 85},
+    {"name": "Tim", "grade": 75},
+    {"name": "Tom", "grade": 65},
+    {"name": "Mary", "grade": 55}
 ]
 
 def display():
@@ -28,6 +28,7 @@ def add_student():
     else:
         print("Enter valid information")
     save_data()
+    
 def display_all_students():
     if not students:
         print("No students to display.")
@@ -39,33 +40,52 @@ def display_all_students():
 
 def search_student():
     name = input("Enter name to search: ")
-    if name in students:
-        print(name)
-    else:
-        print("Name not found")
+    found = False
+    for student in students:
+        if student["name"].lower() == name.lower():
+            print(f"Found: {student['name']} - Grade: {student['grade']}")
+            found = True
+            break
+    if not found:
+        print("Name not found.")
 
 def calculate_statistics():
+    if not students:
+        print("No student data to calculate.")
+        return
 
-    grades = [student["grade"] for student in students]
-    average = sum(grades) / len(grades)
-    highest = max(grades)
-    lowest = min(grades)
+    total = 0
+    highest = students[0]["grade"]
+    lowest = students[0]["grade"]
+
+    for student in students:
+        grade = student["grade"]
+        total += grade
+        if grade > highest:
+            highest = grade
+        if grade < lowest:
+            lowest = grade
+
+    average = total / len(students)
 
     print(f"\nAverage Grade: {average:.2f}")
     print(f"Highest Grade: {highest}")
     print(f"Lowest Grade: {lowest}")
 
+
 def save_data():
     with open("file.txt", "w") as f:
-        f.write(students)
-
-    f = open("file.txt", "r")
-    print(f.read())
+        json.dump(students, f)
+    print("Data saved successfully.")
 
 def load_data():
-    file1 = open("file.txt", "w")
-    file1.writelines(students)
-    file1.close()
+    global students
+    try:
+        with open("file.txt", "r") as f:
+            students = json.load(f)
+        print("Data loaded successfully.")
+    except FileNotFoundError:
+        print("No saved file found.")
 
 def main():
     while True:
